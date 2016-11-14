@@ -118,7 +118,10 @@ class Response(object):
         if not self.compute_checksum() == self.chksum:
             return False
         
-        return True     
+        return True
+    
+    def __str__(self):
+        return self.get_raw()
     
 class AbstractMessage(object):
     def __init__(self, msg):
@@ -134,8 +137,14 @@ class AbstractMessage(object):
     def create_response(self, response):
         raise NotImplementedError()
     
+    def __str__(self):
+        return "".join([self.__class__.__name__, ':', str(self.msg)])
+    
 class AbstractResponse(object):
     def __init__(self, response):
+        if isinstance(response, basestring):
+            response = Response(response)
+        
         if not isinstance(response, Response):
             raise TypeError("No Response given")
             
@@ -143,3 +152,12 @@ class AbstractResponse(object):
         
     def get_response(self):
         return self.response
+    
+    def is_valid(self):
+        return self.resp.is_valid()
+    
+    def is_successful(self):
+        return self.resp.is_successful()
+    
+    def __str__(self):
+        return "".join([self.__class__.__name__, ':', str(self.resp)])

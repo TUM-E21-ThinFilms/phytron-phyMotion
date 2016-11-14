@@ -22,7 +22,7 @@ from message import Message, Response
 class CommunicationError(Exception):
     pass
 
-class ADLProtocol(Protocol):
+class PhytronProtocol(Protocol):
     def __init__(self, slave_addr=0, logger=None):
 
         if logger is None:
@@ -45,46 +45,38 @@ class ADLProtocol(Protocol):
         
     def send_message(self, transport, message):
         
-        message.set_slave_addr(self.receiver)
-        message.finish()
-        
-        data = message.to_binary()
+        data = message.get_raw()
         self.logger.debug('Send: "%s"', message)
 
         transport.write(data)
-        
+    
+    def read_response(self, transport):
+        try:
+            return transport.read_until(Message.ETX)
+        except:
+            raise CommunicationError("Could not read response")
+    
     def query(self, transport, message):
+        is not isinstance(message, AbstractMessage):
+            raise TypeError("message must be an instance of AbstractMessage")
+            
+        msg = message.get_message()
+        msg.set_address(self.receiver)
+        msg.set_checksum(msg.compute_checksum())
         
-        self.send_message(transport, message)
+        self.send_message(transport, msg)
+        response = self.read_response(transport)
         
-        length = message.response_length()
-
-	try:
-            raw_response = transport.read_bytes(length)
-	except slave.transport.Timeout:
-	    raise CommunicationError('Could not read response. Timeout')
+        resp = message.create_response(response)
         
-        if length <= 1:
-            return message.create_response(raw_response)
-        
-        self.logger.debug('Response (%s bytes): "%s"', str(len(raw_response)), " ".join(map(hex, raw_response)))
-       
-        response_as_hex = []
-        
-        for i in range(0, length):
-            response_as_hex.append(raw_response[i])
-        
-        response = message.create_response(response_as_hex)
-
-        if not response.is_valid():
-            raise CommunicationError('Received an invalid response packet.')
-        
-        status = response.get_status()
-        
-        if status.get_error() > 0 or status.get_error_on_execution() > 0 or status.get_error_code() > 0:
-            self.logger.error('Received error code: %s', status.get_error_code())            
-        
-        return response
+        if not resp.is_valid():
+            self.logger.error("Received invalid response: %s", resp)
+            raise CommunicationError("Invalid response")
+            
+        if not resp.is_successful():
+            self.logger.warning("Action (%s) was not successfuly: %s", message, resp)
+            
+        return resp
 
     def write(self, transport, message):
         return self.query(transport, message)

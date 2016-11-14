@@ -16,25 +16,25 @@
 import logging
 
 from slave.transport import Serial
-from protocol import ADLProtocol
-from driver import ADLSputterDriver
+from protocol import PhytronProtocol
+from driver import PhytronDriver
 
-class ADLSputterFactory:
+class PhytronFactory:
     
     def get_logger(self):
-        logger = logging.getLogger('ADL Sputter')
+        logger = logging.getLogger('Phytron phyMotion')
         logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh = logging.FileHandler('adlsputter.log')
+        fh = logging.FileHandler('phytron.log')
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
         return logger
     
-    def create_sputter(self, device='/dev/ttyUSB11', logger=None):
+    def create_sputter(self, device='/dev/ttyUSB00', logger=None):
         if logger is None:
             logger = self.get_logger()
             
-        protocol = ADLProtocol(logger=logger)
-        return ADLSputterDriver(Serial(device, 9600, 8, 'E', 1, 0.05), protocol)
+        protocol = PhytronProtocol(logger=logger)
+        return PhytronDriver(Serial(device, 115200, 8, 'N', 1, 0.5), protocol)
 

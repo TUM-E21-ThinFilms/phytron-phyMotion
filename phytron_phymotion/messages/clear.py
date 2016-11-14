@@ -13,29 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import threading
+from phytron_phymotion.message import AbstractMessage, AbstractResponse, Response
 
-from slave.driver import Driver, Command
-from slave.types import String, BitSequence
-from protocol import PhytronProtocol
-
-from messages.clear import ClearMessage
-
-
-class PhytronDriver(Driver):
-    def __init__(self, transport, protocol=None):
-        if protocol == None:
-            protocol = PhytronProtocol()
-
-        super(PhytronDriver, self).__init__(transport, protocol)
-        self.protocol = protocol
-
-    def send_message(self, message):
-        return self._protocol.query(self._transport, message)
-
-    def clear_bus(self):
-        self._protocol.clear(self._transport)
+class ClearMessage(AbstractMessage):
+    def init(self):
+        self.msg.set_cmd('CR')
+        
+    def create_response(self, raw_response):
+        return ClearResponse(raw_response)
     
-    def clear(self):
-        self.send_message(ClearMessage())
+class ClearResponse(AbstractResponse):
+    pass
