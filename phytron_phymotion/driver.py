@@ -20,8 +20,12 @@ from slave.driver import Driver, Command
 from slave.types import String, BitSequence
 from protocol import PhytronProtocol
 
-from messages.clear import ClearMessage
+from message import AxisMessage
 
+from messages.clear import ClearMessage
+from messages.parameter import ParameterMessage
+from messages.isholding import IsHoldingMessage
+from messages.endphase import EndPhaseMessage
 
 class PhytronDriver(Driver):
     def __init__(self, transport, protocol=None):
@@ -30,8 +34,16 @@ class PhytronDriver(Driver):
 
         super(PhytronDriver, self).__init__(transport, protocol)
         self.protocol = protocol
+        self._module, self._axis = 0,0
 
-    def send_message(self, message):
+    def set_axis(self, module, axis):
+        self._module, self._axis = module, axis
+
+    def send_message(self, message, set_axis=True):
+        if isinstance(message, AxisMessage) and set_axis == True:
+            message.set_axis(self._axis)
+            message.set_module(self._module)
+
         return self._protocol.query(self._transport, message)
 
     def clear_bus(self):
@@ -39,3 +51,41 @@ class PhytronDriver(Driver):
     
     def clear(self):
         self.send_message(ClearMessage())
+
+    def _signum(self, integer):
+        if rel >= 0:
+            return '+'
+        else:
+            return '-'
+
+    def move_relative(self, rel):
+        self.send_message(AxisMessage(self._signum(rel)+str(rel)))
+
+    def move_absolute(self, position):
+        self.send_message(AxisMessage('A' + self._signum(rel) + str(rel)))
+
+    def stop(self):
+        self.send_message(AxisMessage('S'))
+
+    def stopped(self):
+        return self.send_message(IsHoldingMessage())
+
+    def set_parameter(self, id, value):
+        msg = ParameterMessage()
+        msg.set_parameter(id, value)
+        self.send_message(msg)
+
+    def get_parameter(self, id):
+        msg = ParameterMessage()
+        msg.get_parameter(id)
+        return self.send_message(msg)
+
+    def activate_endphase(self):
+        msg = EndPhaseMessage()
+        msg.activate()
+        self.send_message(msg)
+
+    def deactivate_endphase(self):
+        msg = EndPhaseMessage()
+        msg.deactivate()
+        self.send_message(msg)

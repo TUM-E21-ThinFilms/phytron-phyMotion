@@ -67,10 +67,10 @@ class Message(object):
         return "".join([self.STX, self.addr, self.cmd, self.SEPARATOR, self.chksum, self.ETX])
     
     def __str__(self):
-	    return self.get_raw()
+        return self.get_raw()
 
     def __repr__(self):
-	    return self.__str__()
+        return self.__str__()
     
 class Response(object):
     
@@ -124,7 +124,7 @@ class Response(object):
         return self.get_raw()
     
 class AbstractMessage(object):
-    def __init__(self, msg):
+    def __init__(self):
         self.msg = Message()
         self.init()
         
@@ -132,13 +132,51 @@ class AbstractMessage(object):
         pass
         
     def get_message(self):
+        self._prepare_message()
         return self.msg
-    
+
+    def _prepare_message(self):
+        pass
+
     def create_response(self, response):
         raise NotImplementedError()
     
     def __str__(self):
         return "".join([self.__class__.__name__, ':', str(self.msg)])
+
+class AxisMessage(AbstractMessage):
+    def __init__(self, cmd=''):
+        self._axis_cmd = cmd
+        self._module = 0
+        self._axis = 0
+        super(AbstractMessage, self).__init__()
+
+    def set_module(self, module):
+        if not isinstance(module, (int,long)):
+            raise TypeError("module must be of instance integer")
+
+        if not module >= 0:
+            raise ValueError("module must not be negative")
+
+        self._module = module
+
+    def set_axis(self, axis):
+        if not isinstance(axis, (int, long)):
+            raise TypeError("axis must be of instance integer")
+
+        if not axis >= 0:
+            raise ValueError("axis must not be negative")
+
+        self._axis = axis
+
+    def get_axis(self):
+        return self._axis
+
+    def get_module(self):
+        return self._module
+
+    def _prepare_message(self):
+        self.msg.set_cmd("".join(['M', str(self._module), '.', str(self._axis), self._axis_cmd]))
     
 class AbstractResponse(object):
     def __init__(self, response):
@@ -161,3 +199,4 @@ class AbstractResponse(object):
     
     def __str__(self):
         return "".join([self.__class__.__name__, ':', str(self.resp)])
+

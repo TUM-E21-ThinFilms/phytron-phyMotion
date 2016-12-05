@@ -17,7 +17,7 @@ import slave
 import logging
 from slave.transport import Timeout
 from slave.protocol import Protocol
-from message import Message, Response
+from message import AbstractMessage, Message, Response
 
 class CommunicationError(Exception):
     pass
@@ -57,7 +57,7 @@ class PhytronProtocol(Protocol):
             raise CommunicationError("Could not read response")
     
     def query(self, transport, message):
-        is not isinstance(message, AbstractMessage):
+        if not isinstance(message, AbstractMessage):
             raise TypeError("message must be an instance of AbstractMessage")
             
         msg = message.get_message()
