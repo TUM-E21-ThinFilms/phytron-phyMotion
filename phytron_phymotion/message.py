@@ -21,7 +21,7 @@ def compute_chksum(data):
     return hex(chksum)[2:].upper().zfill(2)
 
 class Message(object):
-    SEPARATOR = ':'
+    SEPARATOR = chr(0x3A) # 0x3a_h = str(':')
     STX = chr(0x02)
     ETX = chr(0x03)
     
@@ -79,22 +79,22 @@ class Response(object):
     
     def __init__(self, response_array):
         
-        response_array = str(response_array)
+#        response_array = str(response_array)
         
         if len(response_array) > 5:
             self.stx = response_array[0]
             self.status = response_array[1]
             self.etx = response_array[-1]
-            self.chksum = response_array[-3:-1]
-            
+            self.chksum = "".join(response_array[-3:-1])
+
             if response_array[2] == Message.SEPARATOR:
                 self.response = ''
             elif response_array[-4] == Message.SEPARATOR:
-                self.response = response_array[2:-4]
+                self.response = "".join(response_array[2:-4])
             else:
                 raise ValueError("Invalid response given (Separator ':' not found)")
         else:
-            raise ValueError("Invalid response given (Response too short)")
+            raise ValueError("Invalid response given (Response too short: "+str(len(response_array))+")")
 
     def get_response(self):
         return self.response
@@ -103,7 +103,7 @@ class Response(object):
         return "".join([self.stx, self.status, self.response, Message.SEPARATOR, self.chksum, self.etx])
     
     def compute_checksum(self):
-        return compute_chksum(list("".join([self.stx, self.status, self.response, Message.SEPARATOR])))
+        return compute_chksum(list("".join([self.status, self.response, Message.SEPARATOR])))
     
     def is_successful(self):
         return self.status == self.ACK
@@ -114,7 +114,6 @@ class Response(object):
     def is_valid(self):
         if self.stx is not Message.STX or self.etx is not Message.ETX:
             return False
-        
         if not self.compute_checksum() == self.chksum:
             return False
         
@@ -146,10 +145,11 @@ class AbstractMessage(object):
 
 class AxisMessage(AbstractMessage):
     def __init__(self, cmd=''):
+        super(AbstractMessage, self).__init__()
         self._axis_cmd = cmd
         self._module = 0
         self._axis = 0
-        super(AbstractMessage, self).__init__()
+	self.msg = Message()
 
     def set_module(self, module):
         if not isinstance(module, (int,long)):
@@ -177,6 +177,14 @@ class AxisMessage(AbstractMessage):
 
     def _prepare_message(self):
         self.msg.set_cmd("".join(['M', str(self._module), '.', str(self._axis), self._axis_cmd]))
+
+    def create_response(self, response):
+#	print( response)
+#	print(type(response))
+#        print(response)
+        return Response(response)
+
+        return response
     
 class AbstractResponse(object):
     def __init__(self, response):
@@ -189,7 +197,7 @@ class AbstractResponse(object):
         self.resp = response
         
     def get_response(self):
-        return self.response
+        return self.resp
     
     def is_valid(self):
         return self.resp.is_valid()

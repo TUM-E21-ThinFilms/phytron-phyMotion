@@ -55,7 +55,12 @@ class PhytronProtocol(Protocol):
     
     def read_response(self, transport):
         try:
-            return transport.read_until(Message.ETX)
+            response = transport.read_until(Message.ETX)
+            ret = []
+            for chunk in response:
+                ret.append(chr(chunk))
+	    ret.append(Message.ETX)
+            return ret
         except:
             raise CommunicationError("Could not read response")
     
@@ -78,7 +83,7 @@ class PhytronProtocol(Protocol):
                 raise CommunicationError("Invalid response")
 
             if not resp.is_successful():
-                self.logger.warning("Action (%s) was not successfuly: %s", message, resp)
+                self.logger.warning("Action (%s) was not successful: %s", message, resp)
 
             return resp
 

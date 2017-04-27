@@ -23,7 +23,7 @@ class PhytronFactory:
     def get_logger(self):
         return get_sputter_logger('Phytron phyMotion', 'phytron.log')
     
-    def create_sputter(self, device='/dev/ttyUSB00', logger=None):
+    def create_driver(self, device='/dev/ttyUSB24', logger=None):
         if logger is None:
             logger = self.get_logger()
             

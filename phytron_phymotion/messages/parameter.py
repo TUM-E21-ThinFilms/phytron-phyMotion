@@ -35,7 +35,7 @@ class ParameterMessage(AxisMessage):
             raise ValueError("number must be in range [0, 99]")
 
     def create_response(self, raw_response):
-        return ParameterResponse(raw_response)
+        return ParameterResponse(Response(raw_response))
 
 class ParameterResponse(AbstractResponse):
     pass

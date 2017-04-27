@@ -52,8 +52,11 @@ class PhytronDriver(Driver):
     def clear(self):
         self.send_message(ClearMessage())
 
+    def clear_axis(self):
+        return self.send_message(AxisMessage('C'))
+
     def _signum(self, integer):
-        if rel >= 0:
+        if integer >= 0:
             return '+'
         else:
             return '-'
