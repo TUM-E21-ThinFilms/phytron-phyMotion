@@ -15,6 +15,10 @@
 
 from phytron_phymotion.message import AxisMessage, AbstractResponse, Response
 
+PARAMETER_MICROSTEP = 45
+PARAMETER_CURRENT = 41
+PARAMETER_FREQUENCY = 14
+
 class ParameterMessage(AxisMessage):
     def init(self):
         self.msg._axis_cmd = ''

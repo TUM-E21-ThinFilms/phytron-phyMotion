@@ -15,6 +15,7 @@
 
 from e21_util.transport import Serial
 from e21_util.log import get_sputter_logger
+from e21_util.ports import Ports
 from protocol import PhytronProtocol
 from driver import PhytronDriver
 
@@ -23,10 +24,13 @@ class PhytronFactory:
     def get_logger(self):
         return get_sputter_logger('Phytron phyMotion', 'phytron.log')
     
-    def create_driver(self, device='/dev/ttyUSB24', logger=None):
+    def create_driver(self, device=None, logger=None):
         if logger is None:
             logger = self.get_logger()
-            
+
+        if device is None:
+            device = Ports().get_port(Ports.DEVICE_PHYTRON)
+
         protocol = PhytronProtocol(logger=logger)
         return PhytronDriver(Serial(device, 115200, 8, 'N', 1, 0.5), protocol)
 
