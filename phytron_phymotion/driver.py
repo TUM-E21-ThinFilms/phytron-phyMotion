@@ -50,7 +50,7 @@ class PhytronDriver(Driver):
     def msg(self, msg):
         message = ArbitraryMessage()
         message.set_message(msg)
-        return self.send_message(msg, set_axis=False)
+        return self.send_message(message, set_axis=False)
 
     def clear_bus(self):
         self._protocol.clear(self._transport)
