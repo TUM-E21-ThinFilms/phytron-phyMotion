@@ -26,6 +26,7 @@ from messages.clear import ClearMessage
 from messages.parameter import ParameterMessage
 from messages.isholding import IsHoldingMessage
 from messages.endphase import EndPhaseMessage
+from messages.arbitrary import ArbitraryMessage
 
 class PhytronDriver(Driver):
     def __init__(self, transport, protocol=None):
@@ -45,6 +46,11 @@ class PhytronDriver(Driver):
             message.set_module(self._module)
 
         return self._protocol.query(self._transport, message)
+
+    def msg(self, msg):
+        message = ArbitraryMessage()
+        message.set_message(msg)
+        return self.send_message(msg, set_axis=False)
 
     def clear_bus(self):
         self._protocol.clear(self._transport)

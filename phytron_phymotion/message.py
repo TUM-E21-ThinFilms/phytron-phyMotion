@@ -149,7 +149,7 @@ class AxisMessage(AbstractMessage):
         self._axis_cmd = cmd
         self._module = 0
         self._axis = 0
-	self.msg = Message()
+        self.msg = Message()
 
     def set_module(self, module):
         if not isinstance(module, (int,long)):
