@@ -20,7 +20,7 @@ class ArbitraryMessage(AbstractMessage):
         self.msg.set_cmd(message)
 
     def create_response(self, raw_response):
-        return ClearResponse(raw_response)
+        return ArbitraryResponse(raw_response)
 
 
 class ArbitraryResponse(AbstractResponse):
