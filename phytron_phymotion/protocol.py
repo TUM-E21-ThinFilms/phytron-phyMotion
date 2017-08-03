@@ -59,7 +59,7 @@ class PhytronProtocol(Protocol):
             ret = []
             for chunk in response:
                 ret.append(chr(chunk))
-	    ret.append(Message.ETX)
+            ret.append(Message.ETX)
             return ret
         except:
             raise CommunicationError("Could not read response")

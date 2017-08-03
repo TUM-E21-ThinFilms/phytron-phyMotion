@@ -188,14 +188,18 @@ class AxisMessage(AbstractMessage):
     
 class AbstractResponse(object):
     def __init__(self, response):
-        if isinstance(response, basestring):
+        if isinstance(response, basestring) or isinstance(response, list):
             response = Response(response)
         
         if not isinstance(response, Response):
+
             raise TypeError("No Response given")
             
         self.resp = response
-        
+
+    def get(self):
+        return self.resp.get_response()
+
     def get_response(self):
         return self.resp
     

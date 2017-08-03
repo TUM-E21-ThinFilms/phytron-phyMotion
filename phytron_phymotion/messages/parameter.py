@@ -18,6 +18,9 @@ from phytron_phymotion.message import AxisMessage, AbstractResponse, Response
 PARAMETER_MICROSTEP = 45
 PARAMETER_CURRENT = 41
 PARAMETER_FREQUENCY = 14
+PARAMETER_ENABLE_BOOST = 17
+PARAMETER_BOOST_CURRENT = 42
+PARAMETER_START_STOP_FREQUENCY = 4
 
 class ParameterMessage(AxisMessage):
     def init(self):
@@ -25,11 +28,11 @@ class ParameterMessage(AxisMessage):
 
     def set_parameter(self, id, value):
         self._is_valid_id(id)
-        self._axis_cmd = 'P' + str(id) + '=' + str(value)
+        self._axis_cmd = 'P' + str(id).zfill(2) + '=' + str(value)
 
     def get_parameter(self, id):
         self._is_valid_id(id)
-        self._axis_cmd = 'P' + str(id) + 'R'
+        self._axis_cmd = 'P' + str(id).zfill(2) + 'R'
 
     def _is_valid_id(self, id):
         if not isinstance(id, (int, long)):
