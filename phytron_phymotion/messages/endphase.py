@@ -17,13 +17,13 @@ from phytron_phymotion.message import AxisMessage, AbstractResponse, Response
 
 class EndPhaseMessage(AxisMessage):
     def init(self):
-        self.msg._axis_cmd = ''
+        self._axis_cmd = ''
 
     def activate(self):
-        self.msg._axis_cmd = 'MA'
+        self._axis_cmd = 'MA'
 
     def deactivate(self):
-        self.msg._axis_cmd = 'MD'
+        self._axis_cmd = 'MD'
 
     def create_response(self, raw_response):
         return EndPhaseResponse(raw_response)

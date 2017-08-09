@@ -78,9 +78,6 @@ class Response(object):
     NAK = chr(0x15)
     
     def __init__(self, response_array):
-        
-#        response_array = str(response_array)
-        
         if len(response_array) > 5:
             self.stx = response_array[0]
             self.status = response_array[1]
@@ -179,12 +176,7 @@ class AxisMessage(AbstractMessage):
         self.msg.set_cmd("".join(['M', str(self._module), '.', str(self._axis), self._axis_cmd]))
 
     def create_response(self, response):
-#	print( response)
-#	print(type(response))
-#        print(response)
         return Response(response)
-
-        return response
     
 class AbstractResponse(object):
     def __init__(self, response):
@@ -208,7 +200,13 @@ class AbstractResponse(object):
     
     def is_successful(self):
         return self.resp.is_successful()
-    
+
+    def get_bool(self):
+        return self.get() == 'E'
+
+    def __nonzero__(self):
+        return self.get_bool()
+
     def __str__(self):
         return "".join([self.__class__.__name__, ':', str(self.resp)])
 

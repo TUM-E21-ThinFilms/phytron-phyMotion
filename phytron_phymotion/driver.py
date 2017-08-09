@@ -71,13 +71,16 @@ class PhytronDriver(Driver):
         self.send_message(AxisMessage(self._signum(rel)+str(abs(rel))))
 
     def move_absolute(self, position):
-        self.send_message(AxisMessage('A' + self._signum(rel) + str(rel)))
+        self.send_message(AxisMessage('A' + self._signum(rel) + str(position)))
 
     def stop(self):
         self.send_message(AxisMessage('S'))
 
     def stopped(self):
         return self.send_message(IsHoldingMessage())
+
+    def has_stepping_errors(self):
+        return self.send_message(AxisMessage('==M'))
 
     def set_parameter(self, id, value):
         msg = ParameterMessage()

@@ -18,7 +18,7 @@ from phytron_phymotion.message import AxisMessage, AbstractResponse, Response
 
 class IsHoldingMessage(AxisMessage):
     def init(self):
-        self.msg._axis_cmd = '==H'
+        self._axis_cmd = '==H'
 
     def create_response(self, raw_response):
         return IsHoldingResponse(raw_response)
