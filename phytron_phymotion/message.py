@@ -141,12 +141,11 @@ class AbstractMessage(object):
         return "".join([self.__class__.__name__, ':', str(self.msg)])
 
 class AxisMessage(AbstractMessage):
-    def __init__(self, cmd=''):
-        self._axis_cmd = cmd
+    def __init__(self, cmd = ''):
         self._module = 0
         self._axis = 0
-        self.msg = Message()
-        super(AbstractMessage, self).__init__()
+        self._axis_cmd = cmd
+        super(AxisMessage, self).__init__()
 
     def set_module(self, module):
         if not isinstance(module, (int,long)):
