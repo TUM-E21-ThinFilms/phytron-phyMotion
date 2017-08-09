@@ -35,7 +35,7 @@ class PhytronDriver(Driver):
 
         super(PhytronDriver, self).__init__(transport, protocol)
         self.protocol = protocol
-        self._module, self._axis = 0,0
+        self._module, self._axis = 0, 0
 
     def set_axis(self, module, axis):
         self._module, self._axis = module, axis
@@ -68,7 +68,7 @@ class PhytronDriver(Driver):
             return '-'
 
     def move_relative(self, rel):
-        self.send_message(AxisMessage(self._signum(rel)+str(rel)))
+        self.send_message(AxisMessage(self._signum(rel)+str(abs(rel))))
 
     def move_absolute(self, position):
         self.send_message(AxisMessage('A' + self._signum(rel) + str(rel)))
