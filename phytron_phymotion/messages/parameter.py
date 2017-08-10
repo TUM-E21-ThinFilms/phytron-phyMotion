@@ -25,7 +25,7 @@ PARAMETER_START_STOP_FREQUENCY = 4
 
 class ParameterMessage(AxisMessage):
     def init(self):
-        self.msg._axis_cmd = ''
+        self._axis_cmd = ''
 
     def set_parameter(self, id, value):
         self._is_valid_id(id)
