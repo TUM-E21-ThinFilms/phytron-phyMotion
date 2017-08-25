@@ -73,6 +73,14 @@ class PhytronDriver(Driver):
     def move_absolute(self, position):
         self.send_message(AxisMessage('A' + self._signum(rel) + str(position)))
 
+    def get_absolute_counter(self):
+        msg = ParameterMessage()
+        msg.get_parameter('21')
+        resp = self.send_message(msg)
+        if resp is None:
+            raise RuntimeError("Could not retrieve absolute motor steps")
+        return resp.get()
+
     def stop(self):
         self.send_message(AxisMessage('S'))
 
@@ -91,6 +99,9 @@ class PhytronDriver(Driver):
         msg = ParameterMessage()
         msg.get_parameter(id)
         return self.send_message(msg)
+
+    def get_position(self):
+        return self.get_parameter(21).get()
 
     def activate_endphase(self):
         msg = EndPhaseMessage()
