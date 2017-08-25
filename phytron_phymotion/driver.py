@@ -75,7 +75,7 @@ class PhytronDriver(Driver):
 
     def get_absolute_counter(self):
         msg = ParameterMessage()
-        msg.get_parameter('21')
+        msg.get_parameter(21)
         resp = self.send_message(msg)
         if resp is None:
             raise RuntimeError("Could not retrieve absolute motor steps")
