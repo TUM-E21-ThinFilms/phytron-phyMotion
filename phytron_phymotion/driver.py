@@ -103,6 +103,9 @@ class PhytronDriver(Driver):
     def get_position(self):
         return self.get_parameter(21).get()
 
+    def set_position(self, position):
+        return self.move_absolute(position)
+
     def activate_endphase(self):
         msg = EndPhaseMessage()
         msg.activate()
